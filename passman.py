@@ -1,12 +1,9 @@
 import psycopg2
+import qryhandler
 
-connection = psycopg2.connect(database="postgres", user="postgres", password="postgres", host="localhost", port=5432)
+conn = psycopg2.connect(database="postgres", user="postgres", password="postgres", host="localhost", port=5432)
+cursor = conn.cursor()
 
-cursor = connection.cursor()
+qryhandler.fetch_secret(cursor, "google.com")
 
-cursor.execute("SELECT * from passman;")
-
-# Fetch all rows from database
-record = cursor.fetchall()
-
-print("Data from Database:- ", record)
+conn.close()
