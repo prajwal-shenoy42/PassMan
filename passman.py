@@ -1,7 +1,7 @@
 import psycopg2
 import qryhandler
 import argparse
-import secretgenerator as sg
+import generator as gen
 
 conn = psycopg2.connect(database="postgres", user="postgres", password="postgres", host="localhost", port=5432)
 cursor = conn.cursor()
@@ -16,7 +16,7 @@ parser.add_argument("-n", "--username", nargs=1, help="username for the given ur
 
 args = parser.parse_args()
 if args.add:
-    pwd = sg.generate()
+    pwd = gen.generate(value="password")
     qryhandler.insert_secret(cursor, conn, args.url[0], args.username[0], pwd)
 elif args.delete:
     qryhandler.delete_secret(cursor, conn, args.url[0], args.username[0])
