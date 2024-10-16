@@ -1,6 +1,7 @@
 import psycopg2
 import qryhandler
 import argparse
+import secretgenerator as sg
 
 conn = psycopg2.connect(database="postgres", user="postgres", password="postgres", host="localhost", port=5432)
 cursor = conn.cursor()
@@ -15,10 +16,12 @@ parser.add_argument("-n", "--username", nargs=1, help="username for the given ur
 
 args = parser.parse_args()
 if args.add:
-    qryhandler.insert_secret(cursor, conn, args.url[0], args.username[0], "")
+    pwd = sg.generate()
+    qryhandler.insert_secret(cursor, conn, args.url[0], args.username[0], pwd)
 elif args.delete:
     qryhandler.delete_secret(cursor, conn, args.url[0], args.username[0])
 elif args.fetch:
     qryhandler.fetch_secret(cursor, args.url[0])
+    # If username is given then only 1 value should be returned. If not, all values for that URL should be returned.
 
 conn.close()
