@@ -10,4 +10,4 @@ def generate(pwd):
     return [hashed_secret,salt]
 
 def verify(hash, pwd):
-    pass
+    return ph.verify(hash, pwd)

@@ -20,6 +20,18 @@ def create_user(cursor, connection, firstname, lastname, username, hashed_secret
     cursor.execute(query2)
     connection.commit()
 
+def user_count(cursor, username):
+    query = "Select count(1) from user_details where username = \'" + username + "\';"
+    cursor.execute(query)
+    return cursor.fetchall()[0][0]
+
 # store_hash function does not exist as hash of the master password is created and stored on creation of the user
-def retrieve_hash():
-    pass
+def retrieve_hash(cursor, username):
+    query = "Select hashed_secret from master_info where username = \'" + username + "\';"
+    cursor.execute(query)
+    return cursor.fetchall()[0][0]
+
+def retrieve_salt(cursor, username):
+    query = "Select salt_value from master_info where username = \'" + username + "\';"
+    cursor.execute(query)
+    return cursor.fetchall()[0][0]

@@ -26,18 +26,20 @@ parser.add_argument("-U", "--username", nargs=1, help="the users username on pas
 
 args = parser.parse_args()
 if args.createuser:
-    user.create_user(cursor, conn, args.firstname[0], args.lastname[0], args.username[0])
+    user.create(cursor, conn, args.firstname[0], args.lastname[0], args.username[0])
 elif args.add:
-    pwd = gen.generate("password")
-    try:
+    is_user_verified = user.verify(cursor, args.username[0])
+    if(is_user_verified):
+        pwd = gen.generate("password")
         qh.insert_secret(cursor, conn, args.username[0], args.url_name[0], args.userid[0], pwd)
-    except(psycopg2.errors.ForeignKeyViolation):
-        print("Error: Please create an account before trying to add a new password.")
-    
 elif args.delete:
-    qh.delete_secret(cursor, conn, args.username[0], args.url_name[0], args.userid[0])
+    is_user_verified = user.verify(cursor, args.username[0])
+    if(is_user_verified):
+        qh.delete_secret(cursor, conn, args.username[0], args.url_name[0], args.userid[0])
 elif args.fetch:
-    qh.fetch_secret(cursor, args.username[0], args.url_name[0])
+    is_user_verified = user.verify(cursor, args.username[0])
+    if(is_user_verified):
+        qh.fetch_secret(cursor, args.username[0], args.url_name[0])
     # If userid is given then only 1 value should be returned. If not, all values for that URL should be returned.
 
 conn.close()
