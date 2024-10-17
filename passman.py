@@ -1,27 +1,43 @@
 import psycopg2
-import qryhandler
+import qryhandler as qh
 import argparse
 import generator as gen
+import user
 
-conn = psycopg2.connect(database="postgres", user="postgres", password="postgres", host="localhost", port=5432)
+conn = psycopg2.connect(database="passman", user="postgres", password="postgres", host="localhost", port=5432)
 cursor = conn.cursor()
 
 parser = argparse.ArgumentParser(description="ArgumentParser for Passman")
+
+# Action to be performed: Addition, Deletion or Fetching
 parser.add_argument("-a", "--add", help="add entry into passman", action="store_true")
 parser.add_argument("-d", "--delete", help="remove entry from passman", action="store_true")
 parser.add_argument("-f", "--fetch", help="fetch entry from passman", action="store_true")
+
+# Website URL and UserID for that website. Password is generated and stored automatically.
 parser.add_argument("-u", "--url_name", nargs=1, help="url of the website")
-parser.add_argument("-n", "--userid", nargs=1, help="userid for the given url")
-parser.add_argument("-M", "--master", nargs=1, help="Master Password of the user")
+parser.add_argument("-i", "--userid", nargs=1, help="userid for the given url")
+
+# Flags for new user creation
+parser.add_argument("-C", "--createuser", help="create a new user", action="store_true")
+parser.add_argument("-F", "--firstname", nargs=1, help="firstname of the user")
+parser.add_argument("-L", "--lastname", nargs=1, help="lastname of the user")
+parser.add_argument("-U", "--username", nargs=1, help="the users username on passman")
 
 args = parser.parse_args()
-if args.add:
-    pwd = gen.generate(value="password")
-    qryhandler.insert_secret(cursor, conn, args.url_name[0], args.userid[0], pwd)
+if args.createuser:
+    user.create_user(cursor, conn, args.firstname[0], args.lastname[0], args.username[0])
+elif args.add:
+    pwd = gen.generate("password")
+    try:
+        qh.insert_secret(cursor, conn, args.username[0], args.url_name[0], args.userid[0], pwd)
+    except(psycopg2.errors.ForeignKeyViolation):
+        print("Error: Please create an account before trying to add a new password.")
+    
 elif args.delete:
-    qryhandler.delete_secret(cursor, conn, args.url_name[0], args.userid[0])
+    qh.delete_secret(cursor, conn, args.username[0], args.url_name[0], args.userid[0])
 elif args.fetch:
-    qryhandler.fetch_secret(cursor, args.url_name[0])
+    qh.fetch_secret(cursor, args.username[0], args.url_name[0])
     # If userid is given then only 1 value should be returned. If not, all values for that URL should be returned.
 
 conn.close()
