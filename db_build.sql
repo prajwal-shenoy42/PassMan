@@ -7,7 +7,7 @@ create database passman owner postgres;
 
 create table master_info (
     username varchar(50) not null,
-    hashed_secret varchar(50) not null,
+    hashed_secret varchar(100) not null,
     salt_value varchar(10) not null,
     primary key (username)
 );
