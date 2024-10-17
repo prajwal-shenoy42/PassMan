@@ -13,8 +13,8 @@ def fetch_secret(cursor, username, url_name):
     cursor.execute(query)
     print(cursor.fetchall())
 
-def create_user(cursor, connection, firstname, lastname, username, hashed_secret, salt_value):
-    query1 = "Insert into master_info(username, hashed_secret, salt_value) values (\'" + username + "\', \'" + hashed_secret + "\', \'" + salt_value + "\');"
+def create_user(cursor, connection, firstname, lastname, username, hashed_secret):
+    query1 = "Insert into master_info(username, hashed_secret) values (\'" + username + "\', \'" + hashed_secret + "\');"
     query2 = "Insert into user_details(first_name, last_name, username) values (\'" + firstname + "\', \'" + lastname + "\', \'" + username + "\');"
     cursor.execute(query1)
     cursor.execute(query2)
@@ -28,10 +28,5 @@ def user_count(cursor, username):
 # store_hash function does not exist as hash of the master password is created and stored on creation of the user
 def retrieve_hash(cursor, username):
     query = "Select hashed_secret from master_info where username = \'" + username + "\';"
-    cursor.execute(query)
-    return cursor.fetchall()[0][0]
-
-def retrieve_salt(cursor, username):
-    query = "Select salt_value from master_info where username = \'" + username + "\';"
     cursor.execute(query)
     return cursor.fetchall()[0][0]
