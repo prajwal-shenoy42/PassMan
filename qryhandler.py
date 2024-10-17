@@ -1,10 +1,10 @@
-def insert_secret(cursor, connection, url, username, password):
-    query = "Insert into secret_storage(URL, username, password) values (\'" + url + "\', \'" + username + "\', \'" + password + "\');"
+def insert_secret(cursor, connection, url, userid, password):
+    query = "Insert into secret_storage(URL, userid, password) values (\'" + url + "\', \'" + userid + "\', \'" + password + "\');"
     cursor.execute(query)
     connection.commit()
 
-def delete_secret(cursor, connection, url, username):
-    query = "Delete from secret_storage where url = \'" + url + "\' and username = \'" + username + "\';"
+def delete_secret(cursor, connection, url, userid):
+    query = "Delete from secret_storage where url = \'" + url + "\' and userid = \'" + userid + "\';"
     cursor.execute(query)
     connection.commit()
 
